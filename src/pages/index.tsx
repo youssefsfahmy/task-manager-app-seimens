@@ -1,118 +1,155 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import TaskModal from "@/components/home/task-modal";
+import { DragDropContext } from "react-beautiful-dnd";
+import TaskColumn from "@/components/home/task-column";
+import Filter from "@/components/home/filter";
+import { useTasks } from "@/lib/context/task-context";
+import { TaskType } from "@/utils/types";
+import Plus from "@/components/common/icons/plus";
+import DeleteModal from "@/components/home/delete-modal";
+import { NewStatus } from "@/components/home/new-status";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const lodashClonedeep = require("lodash.clonedeep");
 
 export default function Home() {
+  const { allTasksFilteredAndSorted, setOpenedTask, updateTask, statuses } =
+    useTasks();
+
+  // const onDragEnd = (result: { source: any; destination: any }) => {
+  //   const { source, destination } = result;
+  //   if (!destination) return;
+
+  //   const sourceColumn = allTasksFilteredAndSorted.filter(
+  //     (task) => task.state === source.droppableId
+  //   );
+  //   const destinationColumn =
+  //     source.droppableId === destination.droppableId
+  //       ? sourceColumn
+  //       : allTasksFilteredAndSorted.filter(
+  //           (task) => task.state === destination.droppableId
+  //         );
+  //   const [movedItem] = sourceColumn.splice(source.index, 1);
+
+  //   movedItem.order = destination.index;
+  //   console.log(source.droppableId, destination.droppableId);
+  //   if (source.droppableId === destination.droppableId) {
+  //     console.log(sourceColumn.map((s) => s));
+  //     console.log(
+  //       destinationColumn.map((s) => {
+  //         s;
+  //       })
+  //     );
+  //     console.log(destination.index);
+  //     sourceColumn.splice(destination.index, 0, movedItem);
+  //     sourceColumn.forEach((task, index) => {
+  //       updateTask(task.id!, { ...task, order: index });
+  //     });
+  //   } else {
+  //     destinationColumn.splice(destination.index, 0, movedItem);
+  //     movedItem.state = destination.droppableId;
+  //     updateTask(movedItem.id!, {
+  //       ...movedItem,
+  //       order: destination.index,
+  //       state: destination.droppableId,
+  //     });
+
+  //     destinationColumn.forEach((task, index) => {
+  //       if (task.id !== movedItem.id) {
+  //         updateTask(task.id!, { ...task, order: index });
+  //       }
+  //     });
+
+  //     sourceColumn.forEach((task, index) => {
+  //       updateTask(task.id!, { ...task, order: index });
+  //     });
+  //   }
+  // };
+
+  const onDragEnd = (result: { source: any; destination: any }) => {
+    const { source, destination } = result;
+    if (!destination) return;
+
+    // Deep copy to prevent direct state mutation
+    const allTasksCopy: TaskType[] = lodashClonedeep(allTasksFilteredAndSorted);
+
+    // Find and prepare the source and destination columns
+    const sourceTasks = allTasksCopy.filter(
+      (task) => task.state === source.droppableId
+    );
+    const destinationTasks =
+      source.droppableId === destination.droppableId
+        ? sourceTasks
+        : allTasksCopy.filter((task) => task.state === destination.droppableId);
+
+    // Extract and move the task
+    const [movedTask] = sourceTasks.splice(source.index, 1);
+    destinationTasks.splice(destination.index, 0, movedTask);
+
+    // If moving to a different column, update the task's state
+    if (source.droppableId !== destination.droppableId) {
+      movedTask.state = destination.droppableId;
+    }
+
+    // Create a new array for the updated tasks, reflecting any state change
+    const updatedTasks = allTasksCopy.map((task) => {
+      if (task.id === movedTask.id) {
+        return { ...movedTask, order: destination.index }; // Update moved task
+      } else if (
+        task.state === source.droppableId ||
+        (source.droppableId !== destination.droppableId &&
+          task.state === destination.droppableId)
+      ) {
+        // Adjust order for tasks that were shifted as a result of the move
+        const currentIndex = destinationTasks.findIndex(
+          ({ id }) => id === task.id
+        );
+        return { ...task, order: currentIndex };
+      }
+      return task;
+    });
+    console.log(JSON.stringify(updatedTasks));
+
+    // Update tasks in state (assuming a function exists to update all at once)
+    // This is a pseudo-function, replace with your actual state update logic
+    // updateAllTasks(updatedTasks);
+
+    // Optionally, if tasks need to be updated individually in the backend,
+    // loop through and call updateTask for each one
+    updatedTasks.forEach((task) => {
+      console.log(JSON.stringify(task));
+
+      updateTask(task.id!, { ...task, order: task.order, state: task.state });
+    });
+  };
+
   return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/pages/index.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <div className="flex items-center justify-center min-h-screen bg-gray-800 flex-col pb-28">
+      <div className="text-xl text-white py-5">Task Manager </div>
+      <Filter />
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="w-full grid grid-rows-3 px-4 gap-2 md:grid-cols-3 md:grid-rows-1 md:gap-16 md:px-16">
+          {statuses.map((status) => (
+            <TaskColumn
+              key={status.id}
+              title={status.name}
+              tasks={allTasksFilteredAndSorted.filter(
+                (task) => task.state === status.name
+              )}
+              state={status.name}
             />
-          </a>
+          ))}
+          <NewStatus />
         </div>
-      </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+        <TaskModal />
+        <DeleteModal />
+        <div
+          onClick={() => setOpenedTask({ title: "", order: -1 } as TaskType)}
+          className={`flex fixed text-sm right-6 bottom-6 mx-auto w-fit px-3 py-3 rounded-[100%] text-center text-white transform  transition-all duration-700 z-[10] bg-primary items-center cursor-pointer`}
         >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+          <Plus />
+        </div>
+      </DragDropContext>
+    </div>
   );
 }
