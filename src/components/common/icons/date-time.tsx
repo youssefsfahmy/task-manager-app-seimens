@@ -4,7 +4,6 @@ import React from "react";
 const DateTime: React.FC<IconProps> = ({
   size = "20",
   color = "currentColor",
-  ...attributes
 }) => {
   return (
     <svg

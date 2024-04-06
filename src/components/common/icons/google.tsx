@@ -1,11 +1,7 @@
 import { IconProps } from "@/utils/types";
 import React from "react";
 
-const Google: React.FC<IconProps> = ({
-  size = "20",
-  color = "currentColor",
-  ...attributes
-}) => {
+const Google: React.FC<IconProps> = ({ size = "20" }) => {
   return (
     <svg
       width={size}

@@ -9,7 +9,7 @@ import { useSnackbar } from "@/lib/context/snack-bar-context";
 import { TaskType } from "@/utils/types";
 import { useTasks } from "@/lib/context/task-context";
 import X from "@/components/common/icons/x";
-import { CustomDropdown } from "@/components/common/drop-down/Custom-dropdown";
+import { CustomDropdown } from "@/components/common/drop-down/custom-dropdown";
 
 const TaskModal = () => {
   const { openedTask, addNewTask, setOpenedTask, statuses } = useTasks();

@@ -1,6 +1,5 @@
 import Button from "@/components/common/button";
 import { CustomInput } from "@/components/common/custom-input/CustomInput";
-import Google from "@/components/common/icons/google";
 import { useSnackbar } from "@/lib/context/snack-bar-context";
 import { signUp } from "@/utils/firebase";
 import React, { useState } from "react";

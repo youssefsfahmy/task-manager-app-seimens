@@ -1,5 +1,5 @@
 import { CustomInput } from "@/components/common/custom-input/CustomInput";
-import { CustomDropdown } from "@/components/common/drop-down/Custom-dropdown";
+import { CustomDropdown } from "@/components/common/drop-down/custom-dropdown";
 import Search from "@/components/common/icons/search";
 import Sorting from "@/components/common/icons/sorting";
 import { useTasks } from "@/lib/context/task-context";
