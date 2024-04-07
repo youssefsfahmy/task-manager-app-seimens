@@ -10,6 +10,7 @@ import { TaskType } from "@/utils/types";
 import { useTasks } from "@/lib/context/task-context";
 import X from "@/components/common/icons/x";
 import { CustomDropdown } from "@/components/common/drop-down/custom-dropdown";
+import { nowDateInDateTimeFormat } from "@/utils/help";
 
 const TaskModal = () => {
   const { openedTask, addNewTask, setOpenedTask, statuses } = useTasks();
@@ -121,11 +122,8 @@ const TaskModal = () => {
               type="datetime-local"
               name="due"
               placeholder="Due Date"
-              value={
-                taskState?.due
-                  ? taskState?.due?.toString()
-                  : new Date().toString()
-              }
+              defaultValue={nowDateInDateTimeFormat()}
+              value={taskState?.due?.toString()}
               required
               onChange={handleChange}
             />

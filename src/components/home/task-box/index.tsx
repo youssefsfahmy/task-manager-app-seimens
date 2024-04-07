@@ -53,7 +53,10 @@ const TaskBox = (props: { task: TaskType; key?: number }) => {
         </div>
       </div>
 
-      <div className="text-gray-50 flex content-center items-center">
+      <div
+        className="text-gray-50 flex content-center items-center"
+        onClick={() => setOpenedTask(task)}
+      >
         <DateTime className="text-black" color="#FFFFFF" />
         {moment(task.due).calendar()}
       </div>

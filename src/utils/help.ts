@@ -57,3 +57,17 @@ export const levenshteinDistance = (a: string, b: string): number => {
 
   return matrix[b.length][a.length];
 };
+
+export const nowDateInDateTimeFormat = () => {
+  const now = new Date();
+  const nowUtc = new Date(
+    Date.UTC(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes()
+    )
+  );
+  return nowUtc.toISOString().slice(0, 16); // Formats to 'YYYY-MM-DDTHH:MM'
+};

@@ -23,7 +23,7 @@ export default function TaskColumn(props: {
         <Plus size={25} color="#BBBBBB" />
       </button>
       <div className=" flex content-center text-xs text-white px-4">
-        <div className="bg-gray-500 h-5 min-w-5 text-center rounded-2xl content-center mr-2">
+        <div className="grid bg-gray-500 h-5 min-w-5 text-center rounded-2xl content-center mr-2">
           {tasks.length}
         </div>
         <div className="content-center">{title}</div>
