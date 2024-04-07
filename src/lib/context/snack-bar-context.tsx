@@ -31,13 +31,15 @@ export const SnackbarProvider = ({
 
   const snackbarElement = (
     <Fragment>
-      <div
-        className={`flex fixed text-sm left-0 right-0 bottom-6  mx-auto w-fit px-4 py-2 rounded-xl text-center text-white transform  transition-all  duration-700 z-[10]  items-center cursor-pointer ${
-          isError ? "bg-melon" : "bg-[#5cb85c]"
-        }  ${isOpen ? "bottom-[10%] md:bottom-[5%]" : "bottom-[-100px]"}`}
-      >
-        {message}
-      </div>
+      {message && (
+        <div
+          className={`flex fixed text-sm left-0 right-0 bottom-6  mx-auto w-fit px-4 py-2 rounded-xl text-center text-white transform  transition-all  duration-700 z-[10]  items-center cursor-pointer ${
+            isError ? "bg-melon" : "bg-[#5cb85c]"
+          }  ${isOpen ? "bottom-[10%] md:bottom-[5%]" : "bottom-[-100px]"}`}
+        >
+          {message}
+        </div>
+      )}
     </Fragment>
   );
 
