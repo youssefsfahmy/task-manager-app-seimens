@@ -79,7 +79,7 @@ const TaskModal = () => {
         ref={cardRef}
         onSubmit={handleCreateTask}
       >
-        <div className="w-full text-center text-base font-bold">
+        <div className="w-full text-center text-base font-bold text-gray-900">
           {taskState?.title ? taskState?.title : "New Task"}
         </div>
         <button
@@ -123,8 +123,8 @@ const TaskModal = () => {
               placeholder="Due Date"
               value={
                 taskState?.due
-                  ? taskState?.due?.toDateString()
-                  : new Date().toDateString()
+                  ? taskState?.due?.toString()
+                  : new Date().toString()
               }
               required
               onChange={handleChange}
