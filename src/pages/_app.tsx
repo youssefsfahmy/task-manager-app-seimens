@@ -10,7 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <SnackbarProvider>
       <AuthProvider>
         <TasksProvider>
-          <Component {...pageProps} />{" "}
+          <Component {...pageProps} />
         </TasksProvider>
       </AuthProvider>
     </SnackbarProvider>

@@ -12,6 +12,7 @@ export type TaskType = {
   state: string;
   due: Date;
   order: number;
+  isComplete: boolean;
 };
 
 export type StatusType = { id: string; name: string; userId?: string | null };

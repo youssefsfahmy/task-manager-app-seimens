@@ -12,8 +12,6 @@ export function filterTasksBySearch(
   const searchedTasks: TaskType[] = tasks.filter((task) => {
     const taskName = task.title.toLowerCase();
 
-    // Optionally, concatenate other searchable string fields from the task here
-
     if (taskName.includes(searchValue.toLowerCase())) {
       return true;
     }

@@ -15,64 +15,12 @@ export default function Home() {
   const { allTasksFilteredAndSorted, setOpenedTask, updateTask, statuses } =
     useTasks();
 
-  // const onDragEnd = (result: { source: any; destination: any }) => {
-  //   const { source, destination } = result;
-  //   if (!destination) return;
-
-  //   const sourceColumn = allTasksFilteredAndSorted.filter(
-  //     (task) => task.state === source.droppableId
-  //   );
-  //   const destinationColumn =
-  //     source.droppableId === destination.droppableId
-  //       ? sourceColumn
-  //       : allTasksFilteredAndSorted.filter(
-  //           (task) => task.state === destination.droppableId
-  //         );
-  //   const [movedItem] = sourceColumn.splice(source.index, 1);
-
-  //   movedItem.order = destination.index;
-  //   console.log(source.droppableId, destination.droppableId);
-  //   if (source.droppableId === destination.droppableId) {
-  //     console.log(sourceColumn.map((s) => s));
-  //     console.log(
-  //       destinationColumn.map((s) => {
-  //         s;
-  //       })
-  //     );
-  //     console.log(destination.index);
-  //     sourceColumn.splice(destination.index, 0, movedItem);
-  //     sourceColumn.forEach((task, index) => {
-  //       updateTask(task.id!, { ...task, order: index });
-  //     });
-  //   } else {
-  //     destinationColumn.splice(destination.index, 0, movedItem);
-  //     movedItem.state = destination.droppableId;
-  //     updateTask(movedItem.id!, {
-  //       ...movedItem,
-  //       order: destination.index,
-  //       state: destination.droppableId,
-  //     });
-
-  //     destinationColumn.forEach((task, index) => {
-  //       if (task.id !== movedItem.id) {
-  //         updateTask(task.id!, { ...task, order: index });
-  //       }
-  //     });
-
-  //     sourceColumn.forEach((task, index) => {
-  //       updateTask(task.id!, { ...task, order: index });
-  //     });
-  //   }
-  // };
-
   const onDragEnd = (result: { source: any; destination: any }) => {
     const { source, destination } = result;
     if (!destination) return;
 
-    // Deep copy to prevent direct state mutation
     const allTasksCopy: TaskType[] = lodashClonedeep(allTasksFilteredAndSorted);
 
-    // Find and prepare the source and destination columns
     const sourceTasks = allTasksCopy.filter(
       (task) => task.state === source.droppableId
     );
@@ -81,10 +29,8 @@ export default function Home() {
         ? sourceTasks
         : allTasksCopy.filter((task) => task.state === destination.droppableId);
 
-    // Extract and move the task
     const [movedTask] = sourceTasks.splice(source.index, 1);
     destinationTasks.splice(destination.index, 0, movedTask);
-
     // If moving to a different column, update the task's state
     if (source.droppableId !== destination.droppableId) {
       movedTask.state = destination.droppableId;
@@ -107,17 +53,8 @@ export default function Home() {
       }
       return task;
     });
-    console.log(JSON.stringify(updatedTasks));
 
-    // Update tasks in state (assuming a function exists to update all at once)
-    // This is a pseudo-function, replace with your actual state update logic
-    // updateAllTasks(updatedTasks);
-
-    // Optionally, if tasks need to be updated individually in the backend,
-    // loop through and call updateTask for each one
     updatedTasks.forEach((task) => {
-      console.log(JSON.stringify(task));
-
       updateTask(task.id!, { ...task, order: task.order, state: task.state });
     });
   };

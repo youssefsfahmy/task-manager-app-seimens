@@ -1,5 +1,5 @@
 import Button from "@/components/common/button";
-import { CustomInput } from "@/components/common/custom-input/CustomInput";
+import { CustomInput } from "@/components/common/custom-input/custom-input";
 import { useSnackbar } from "@/lib/context/snack-bar-context";
 import { signUp } from "@/utils/firebase";
 import React, { useState } from "react";
@@ -9,10 +9,7 @@ const SignupForm = () => {
   const { openSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = async (
-    event: //  React.FormEvent<HTMLFormElement>
-    any
-  ) => {
+  const handleSignUp = async (event: any) => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;

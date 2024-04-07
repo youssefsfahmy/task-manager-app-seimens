@@ -1,39 +1,21 @@
-import { ReactNode, useState, ChangeEvent } from "react";
+import { ReactNode, useState } from "react";
 import ChevronDown from "../icons/chevron-down";
 
 interface CustomDropdownProps {
   options: { value: string; label: string }[];
   placeholder?: string;
   icon?: ReactNode;
-  onChange?: (value: string) => void;
-  defaultValue?: string; // New defaultValue prop
-  required?: boolean;
 }
 
-export const CustomDropdown = ({
-  options,
-  placeholder = "Select...",
-  icon,
-  required,
-  onChange,
-  defaultValue = "", // Initializing defaultValue with an empty string
-}: CustomDropdownProps) => {
-  const [selectedValue, setSelectedValue] = useState(defaultValue);
+export const CustomDropdown = (
+  props: CustomDropdownProps & React.SelectHTMLAttributes<HTMLSelectElement>
+) => {
   const [error, setError] = useState("");
   const [isError, setIsError] = useState(false);
 
-  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const { value } = e.target;
-    setSelectedValue(value);
-    setIsError(false);
-    if (onChange) {
-      onChange(value);
-    }
-  };
-
   // Example validation function
   const validate = (value: string) => {
-    if (!value && required) {
+    if (!value && props.required) {
       setError("Required");
       setIsError(true);
     } else {
@@ -44,17 +26,16 @@ export const CustomDropdown = ({
 
   return (
     <div className="relative flex items-center text-gray-700">
-      <div className="absolute z-20 left-1.5 text-xs ">{icon}</div>
+      <div className="absolute z-20 left-1.5 text-xs ">{props.icon}</div>
       <select
-        value={selectedValue}
-        onChange={handleChange}
-        onBlur={() => validate(selectedValue)}
+        {...props}
+        onBlur={() => validate(props.value as string)}
         className={`text-xs block appearance-none w-full bg-white border border-gray-200   text-gray-700 py-2 pl-2 pr-10 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 z-10 ${
           isError && "border-red-500"
-        } ${icon && "pl-7"}`}
+        } ${props.icon && "pl-7"}`}
       >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
+        <option value="">{props.placeholder}</option>
+        {props.options.map((option) => (
           <option className="text-xs" key={option.value} value={option.value}>
             {option.label}
           </option>

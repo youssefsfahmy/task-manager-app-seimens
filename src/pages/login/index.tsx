@@ -17,7 +17,7 @@ const Login = () => {
             <div className="front">
               <LoginForm />
               <p className="text-center text-gray-300 text-xs">
-                Not a member?{" "}
+                Not a member?
                 <button
                   onClick={handleFlip}
                   className="text-blue-500 hover:text-blue-800"
@@ -30,7 +30,7 @@ const Login = () => {
               <SignupForm />
 
               <p className="text-center text-gray-300 text-xs">
-                Already a member?{" "}
+                Already a member?
                 <button
                   onClick={handleFlip}
                   className="text-blue-500 hover:text-blue-800"

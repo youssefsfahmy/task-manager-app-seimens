@@ -1,5 +1,5 @@
 import Button from "@/components/common/button";
-import { CustomInput } from "@/components/common/custom-input/CustomInput";
+import { CustomInput } from "@/components/common/custom-input/custom-input";
 import Plus from "@/components/common/icons/plus";
 import { useSnackbar } from "@/lib/context/snack-bar-context";
 import { useTasks } from "@/lib/context/task-context";

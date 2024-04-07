@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// /contexts/TasksContext.js
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   collection,
@@ -10,6 +10,7 @@ import {
   doc,
   where,
   deleteDoc,
+  orderBy,
 } from "firebase/firestore";
 import { auth, db } from "@/utils/firebase";
 import { StatusType, TaskType } from "@/utils/types";
@@ -17,7 +18,6 @@ import { SORT_CRITERIA } from "@/utils/enums";
 import { useSnackbar } from "./snack-bar-context";
 import { filterTasksBySearch } from "@/utils/help";
 import moment from "moment";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const lodashClonedeep = require("lodash.clonedeep");
 
 interface TaskContextType {
@@ -36,6 +36,8 @@ interface TaskContextType {
   statuses: StatusType[];
   addNewSatus: (status: string) => Promise<void>;
   clearTaskContext: () => void;
+  setFilterDue: React.Dispatch<React.SetStateAction<boolean>>;
+  filterDue: boolean;
 }
 
 const TasksContext = createContext<TaskContextType | null>(null);
@@ -44,6 +46,7 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
   const { openSnackbar } = useSnackbar();
   const [statuses, setStatuses] = useState<StatusType[]>([]);
   const [allTasks, setAllTasks] = useState<TaskType[]>([]);
+  const [filterDue, setFilterDue] = useState<boolean>(false);
   const [allTasksFilteredAndSorted, setAllTasksFilteredAndSorted] = useState<
     TaskType[]
   >([]);
@@ -57,7 +60,6 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!auth.currentUser) {
       clearTaskContext();
-      console.log("No authenticated user available.");
       return;
     }
     const userId = auth.currentUser.uid;
@@ -72,24 +74,25 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [auth?.currentUser?.uid]);
 
   useEffect(() => {
     if (!auth.currentUser?.uid) {
       clearTaskContext();
-      console.log("No authenticated user available.");
       return;
     }
     const userId = auth.currentUser.uid;
     // Query for user-specific statuses
     const userSpecificQuery = query(
       collection(db, "status"),
-      where("userId", "==", userId)
+      where("userId", "==", userId),
+      orderBy("createdAt", "asc")
     );
     // Query for default statuses
     const defaultStatusQuery = query(
       collection(db, "status"),
-      where("userId", "==", null)
+      where("userId", "==", null),
+      orderBy("createdAt", "asc")
     );
 
     const unsubscribeUserSpecific = onSnapshot(
@@ -108,8 +111,6 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
           );
           return [...defaultStatuses, ...userSpecificStatuses];
         });
-
-        console.log("user status", userSpecificStatuses);
       }
     );
 
@@ -127,7 +128,7 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
           const userSpecificStatuses = prevStatuses.filter(
             (status) => status.userId === userId
           );
-          return [...userSpecificStatuses, ...defaultStatuses];
+          return [...defaultStatuses, ...userSpecificStatuses];
         });
       }
     );
@@ -136,12 +137,11 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
       unsubscribeUserSpecific();
       unsubscribeDefaultStatus();
     };
-  }, []);
+  }, [auth?.currentUser?.uid]);
 
   useEffect(() => {
     const allTasksTemp: TaskType[] = lodashClonedeep(allTasks);
 
-    // Define a helper function for date comparison
     const compareDates = (a: TaskType, b: TaskType, ascending = true) => {
       const dateA = moment(a.due);
       const dateB = moment(b.due);
@@ -151,7 +151,16 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
       return dateB.diff(dateA);
     };
 
-    // Sorting function based on the current criterion
+    const filterDueDates = (tasks: TaskType[]) => {
+      if (filterDue) {
+        console.log("here");
+        return tasks.filter((task) => {
+          return moment(task.due).isBefore(moment());
+        });
+      }
+      return tasks;
+    };
+
     const sortTasks = (tasks: TaskType[], criterion: SORT_CRITERIA) => {
       switch (criterion) {
         case SORT_CRITERIA.NAME_ASC:
@@ -162,20 +171,18 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
           return tasks.sort((a, b) => compareDates(a, b, true));
         case SORT_CRITERIA.DUE_DATE_DESC:
           return tasks.sort((a, b) => compareDates(a, b, false));
-        // Handle additional sorting criteria here
         default:
-          // No additional sorting if the criterion is 'no-sort' or not recognized
-          return tasks;
+          return tasks.sort((a, b) => a.order - b.order);
       }
     };
 
     sortTasks(allTasksTemp, sortCriteria);
-    filterTasksBySearch(allTasksTemp, searchFilter);
-    setAllTasksFilteredAndSorted(allTasksTemp);
-  }, [searchFilter, allTasks, sortCriteria]); // Ensure sortCriterion is included in the dependency array
+    const filteredTasks = filterTasksBySearch(allTasksTemp, searchFilter);
+    const dueTasks = filterDueDates(filteredTasks);
+    setAllTasksFilteredAndSorted(dueTasks);
+  }, [searchFilter, allTasks, sortCriteria, filterDue]);
 
   const addNewTask = async (task: TaskType) => {
-    // Ensure the user is logged in
     if (!auth.currentUser) {
       console.error("No authenticated user");
       return;
@@ -183,7 +190,7 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
 
     const taskWithUser = {
       ...task,
-      userId: auth.currentUser.uid, // Link task to the user
+      userId: auth.currentUser.uid,
     };
 
     try {
@@ -191,10 +198,8 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
         const taskRef = doc(db, "tasks", task.id);
         delete task.id;
         await updateDoc(taskRef, task);
-        openSnackbar("Updated Successfully", false);
       } else {
-        await addDoc(collection(db, "tasks"), taskWithUser);
-        openSnackbar("Created Successfully", false);
+        await addDoc(collection(db, "tasks"), { ...taskWithUser });
       }
     } catch (e) {
       openSnackbar("Something went wrong" + e);
@@ -207,6 +212,7 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
     const taskRef = doc(db, "tasks", taskId);
     try {
       await updateDoc(taskRef, updatedTaskData);
+      openSnackbar("Successfully moved task", false);
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -224,7 +230,6 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addNewSatus = async (status: string) => {
-    // Ensure the user is logged in
     if (!auth.currentUser) {
       console.error("No authenticated user");
       return;
@@ -232,7 +237,8 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
 
     const statusWithUser = {
       name: status,
-      userId: auth.currentUser.uid, // Link task to the user
+      createdAt: new Date(),
+      userId: auth.currentUser.uid,
     };
 
     try {
@@ -265,6 +271,8 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
     statuses,
     addNewSatus,
     clearTaskContext,
+    filterDue,
+    setFilterDue,
   };
 
   return (

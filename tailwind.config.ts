@@ -16,7 +16,7 @@ const config: Config = {
       },
       colors: {
         melon: "#FF637D",
-        primary: "green",
+        primary: "#5cb85c",
         secondary: "white",
       },
     },

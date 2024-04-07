@@ -1,5 +1,5 @@
 import Button from "@/components/common/button";
-import { CustomInput } from "@/components/common/custom-input/CustomInput";
+import { CustomInput } from "@/components/common/custom-input/custom-input";
 import { useSnackbar } from "@/lib/context/snack-bar-context";
 import { PAGE } from "@/utils/enums";
 import { signIn } from "@/utils/firebase";
@@ -12,10 +12,7 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSignIn = async (
-    event: //  React.FormEvent<HTMLFormElement>
-    any
-  ) => {
+  const handleSignIn = async (event: any) => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;

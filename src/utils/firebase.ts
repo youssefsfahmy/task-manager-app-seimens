@@ -42,10 +42,8 @@ export const signIn = async (email: string, password: string) => {
 export const signOutUser = async () => {
   try {
     await signOut(auth);
-    // Sign-out successful
   } catch (error) {
     console.error("Error signing out:", error);
-    // Handle errors here
     throw error;
   }
 };
@@ -53,10 +51,8 @@ export const signOutUser = async () => {
 export const signUp = async (email: string, password: string) => {
   try {
     await createUserWithEmailAndPassword(auth, email, password);
-    // Sign-out successful
   } catch (error) {
     console.error("Error signing out:", error);
-    // Handle errors here
     throw error;
   }
 };
@@ -64,14 +60,7 @@ export const signUp = async (email: string, password: string) => {
 export const signInWithGoogle = async () => {
   try {
     await signInWithPopup(auth, googleProvider);
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    // The signed-in user info.
-    // You can store the user details or token in your app now
   } catch (error: unknown) {
     console.error(error);
-    // Handle Errors here.
-    // The email of the user's account used.
-    // The AuthCredential type that was used.
-    // You might want to show an error message to the user
   }
 };

@@ -1,4 +1,4 @@
-// AuthContext.js
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   Fragment,
   createContext,

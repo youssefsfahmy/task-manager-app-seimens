@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import RichText from "../rich-text-editpr";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
-import { CustomInput } from "@/components/common/custom-input/CustomInput";
+import { CustomInput } from "@/components/common/custom-input/custom-input";
 import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import Button from "@/components/common/button";
 import { useSnackbar } from "@/lib/context/snack-bar-context";
@@ -36,10 +36,7 @@ const TaskModal = () => {
     setTaskState((prev) => ({ ...prev, [name]: value } as TaskType));
   };
 
-  const handleCreateTask = async (
-    event: //  React.FormEvent<HTMLFormElement>
-    any
-  ) => {
+  const handleCreateTask = async (event: any) => {
     event.preventDefault();
 
     const newTask: TaskType = {
@@ -48,9 +45,9 @@ const TaskModal = () => {
     } as TaskType;
 
     setIsLoading(true);
-    await addNewTask(newTask);
 
     try {
+      await addNewTask(newTask);
       openSnackbar("Created Successfully", false);
       onClose();
     } catch (error: any) {
@@ -67,7 +64,7 @@ const TaskModal = () => {
         ? EditorState.createWithContent(convertFromRaw(openedTask?.description))
         : EditorState.createEmpty()
     );
-  }, [openedTask?.id]);
+  }, [openedTask]);
 
   const stateOptions = statuses.map((status) => {
     return { value: status.name, label: status.name };
@@ -140,9 +137,12 @@ const TaskModal = () => {
               placeholder="state"
               defaultValue={taskState?.state}
               options={stateOptions}
+              value={taskState?.state}
               required
-              onChange={(value) =>
-                setTaskState((prev) => ({ ...prev, state: value } as TaskType))
+              onChange={(e) =>
+                setTaskState(
+                  (prev) => ({ ...prev, state: e.target.value } as TaskType)
+                )
               }
             />
           </div>

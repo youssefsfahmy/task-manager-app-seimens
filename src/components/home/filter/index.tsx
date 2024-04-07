@@ -1,4 +1,5 @@
-import { CustomInput } from "@/components/common/custom-input/CustomInput";
+import { CustomInput } from "@/components/common/custom-input/custom-input";
+import ToggleSwitch from "@/components/common/custom-toggle/custom-toggle";
 import { CustomDropdown } from "@/components/common/drop-down/custom-dropdown";
 import Search from "@/components/common/icons/search";
 import Sorting from "@/components/common/icons/sorting";
@@ -7,8 +8,15 @@ import { SORT_CRITERIA } from "@/utils/enums";
 import React from "react";
 
 function Filter() {
-  const { setSearchFiler, searchFilter, sortCriteria, setSortCriteria } =
-    useTasks();
+  const {
+    setSearchFiler,
+    searchFilter,
+    sortCriteria,
+    setSortCriteria,
+    setFilterDue,
+    filterDue,
+  } = useTasks();
+
   const sortingOptions = [
     { value: SORT_CRITERIA.NO_SORT, label: "Default Order" },
     { value: SORT_CRITERIA.NAME_ASC, label: "Name (A-Z)" },
@@ -20,12 +28,16 @@ function Filter() {
     <div className="mb-6 flex w-full px-4 flex-col justify-between content-between gap-4 md:px-16 md:flex-row ">
       <CustomDropdown
         options={sortingOptions}
-        defaultValue={sortCriteria}
-        onChange={(value) => {
-          setSortCriteria(value as SORT_CRITERIA);
+        value={sortCriteria}
+        onChange={(e) => {
+          setSortCriteria(e.target.value as SORT_CRITERIA);
         }}
         icon={<Sorting color="#AAAAAA" />}
       />
+      <div className="flex self-center gap-4 text-white">
+        Show Due Tasks Only
+        <ToggleSwitch isEnabled={filterDue} setIsEnabled={setFilterDue} />
+      </div>
       <CustomInput
         onChange={(e) => setSearchFiler(e.target.value)}
         value={searchFilter || ""}
