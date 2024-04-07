@@ -12,13 +12,13 @@ const RichText = (props: {
   editorState: EditorState | undefined;
 }) => {
   return (
-    <div className="border h-full overflow-hidden">
+    <div className="border h-full overflow-hidden text-gray-900">
       <Editor
         editorState={props.editorState}
         onEditorStateChange={props.onEditorStateChange}
-        wrapperClassName="bg-white h-full"
-        editorClassName="h-full px-4"
-        toolbarClassName="toolbar-class"
+        wrapperClassName="bg-white h-full text-gray-900"
+        editorClassName="h-full px-4 text-gray-900"
+        toolbarClassName="text-gray-900"
       />
     </div>
   );

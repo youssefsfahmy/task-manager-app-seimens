@@ -75,7 +75,7 @@ const TaskModal = () => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <form
-        className="relative bg-gray-100 p-5 rounded-lg shadow-lg w-[95vw] h-[95vh] flex flex-col gap-8 md:h-[80vh] md:w-[80vw]"
+        className="relative bg-gray-100 p-5 rounded-lg shadow-lg w-[95vw] h-[90vh] flex flex-col gap-8 md:h-[80vh] md:w-[80vw]"
         ref={cardRef}
         onSubmit={handleCreateTask}
       >
@@ -121,7 +121,11 @@ const TaskModal = () => {
               type="datetime-local"
               name="due"
               placeholder="Due Date"
-              value={taskState?.due?.toString()}
+              value={
+                taskState?.due
+                  ? taskState?.due?.toDateString()
+                  : new Date().toDateString()
+              }
               required
               onChange={handleChange}
             />

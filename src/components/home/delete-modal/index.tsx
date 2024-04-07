@@ -30,7 +30,7 @@ const DeleteModal = () => {
         ref={cardRef}
       >
         <Trash className="self-center" size={50} color="#8b4343" />
-        <div className="w-full text-center text-base font-bold px-10">
+        <div className="w-full text-center text-base font-bold px-10 text-gray-900">
           Are you sure you want to delete &quot;{taskToDelete?.title}&quot;?
         </div>
 
