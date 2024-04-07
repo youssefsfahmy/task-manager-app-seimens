@@ -12,6 +12,9 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-800">
       <div className="w-full max-w-xs">
+        <div className="text-xl text-white py-5 w-full text-center">
+          Welcome to your Task Manager
+        </div>
         <div className={`flip-container ${isFlipped ? "flipped" : ""}`}>
           <div className="flipper">
             <div className="front">
